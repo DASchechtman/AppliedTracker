@@ -6,12 +6,12 @@ const STATUS_COL = 6
 
 
 function GetCol(data: any[][], col: number) {
-    const FETCHED_DATA = new Array<any>()
+    const FETCHED_DATA = new Array<any>(data.length-1)
 
     for (let i = 1; i < data.length; i++) {
-        FETCHED_DATA.push(data[i][col])
+        FETCHED_DATA[i-1] = data[i][col]
     }
-
+    
     return FETCHED_DATA
 }
 
@@ -33,9 +33,9 @@ function CheckDeclined() {
     const JOB_TITLE = JOB_TITLES[i]
     const KEY = `${COMPANY_NAME}-${JOB_TITLE}`
     const CACHED_COMPANY = PROPS.getProperty(KEY)
-    const MS = Date.now()
 
     if (CACHED_COMPANY === null) {
+        const MS = Date.now()
         PROPS.setProperty(KEY, MS.toString())
         continue
     }
