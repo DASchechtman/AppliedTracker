@@ -15,12 +15,27 @@ function GetCol(data: any[][], col: number) {
     return FETCHED_DATA
 }
 
+function GetData(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
+    const FORMULAS = sheet.getDataRange().getFormulas()
+    const DATA = sheet.getDataRange().getValues()
+
+    for (let i = 0; i < FORMULAS.length; i++) {
+        for(let j = 0; j < FORMULAS[i].length; j++) {
+            if (FORMULAS[i][j] === "") {
+                FORMULAS[i][j] = DATA[i][j]
+            }
+        }
+    }
+
+    return FORMULAS
+}
+
 function DaysToMS(days: number) {
     return days * 86400000
 }
 
 function CheckDeclined() {
-  const SHEET_DATA = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1")!.getDataRange().getValues()
+  const SHEET_DATA = GetData(SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1")!)
 
   const COMPANIES = GetCol(SHEET_DATA, COMPANY_COL)
   const STATUS = GetCol(SHEET_DATA, STATUS_COL)
@@ -46,4 +61,12 @@ function CheckDeclined() {
   }
 
   SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1")!.getDataRange().setValues(SHEET_DATA)
+}
+
+function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
+    const RANGE = e.range
+    const LINK = RANGE.getValue()
+    const NOTATION = RANGE.getA1Notation()
+    if (LINK === "link" || LINK === "" || !NOTATION.includes('E') || NOTATION.includes(":")) { return }
+    RANGE.setValue(`=hyperlink("${LINK}", "link")`)
 }
