@@ -32,17 +32,19 @@ function CheckDeclined() {
   const SHEET_DATA = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1")!.getDataRange().getValues()
 
   const COMPANIES = GetCompanyCol(SHEET_DATA)
+  const STATUS = GetJobStatusCol(SHEET_DATA)
   
   for(let i = 1; i < SHEET_DATA.length; i++) {
     const COMPANY_NAME = COMPANIES[i]
-    const COMPANY_STATUS = SHEET_DATA[i][STATUS_COL]
+    const COMPANY_STATUS = STATUS[i]
     const JOB_TITLE = SHEET_DATA[i][JOB_TITLE_COL]
     const PROPS = PropertiesService.getDocumentProperties()
-    const CACHED_COMPANY = PROPS.getProperty(`${COMPANY_NAME}-${JOB_TITLE}`)
+    const KEY = `${COMPANY_NAME}-${JOB_TITLE}`
+    const CACHED_COMPANY = PROPS.getProperty(KEY)
     const MS = Date.now()
 
     if (CACHED_COMPANY === null) {
-        PROPS.setProperty(`${COMPANY_NAME}-${JOB_TITLE}`, MS.toString())
+        PROPS.setProperty(KEY, MS.toString())
         continue
     }
 
