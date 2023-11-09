@@ -4,21 +4,12 @@ const COMPANY_COL = 0
 const JOB_TITLE_COL = 1
 const STATUS_COL = 6
 
-function GetCompanyCol(data: any[][]) {
+
+function GetCol(data: any[][], col: number) {
     const FETCHED_DATA = new Array<any>()
 
     for (let i = 1; i < data.length; i++) {
-        FETCHED_DATA.push(data[i][COMPANY_COL])
-    }
-
-    return FETCHED_DATA
-}
-
-function GetJobStatusCol(data: any[][]) {
-    const FETCHED_DATA = new Array<any>()
-    
-    for (let i = 1; i < data.length; i++) {
-        FETCHED_DATA.push(data[i][STATUS_COL])
+        FETCHED_DATA.push(data[i][col])
     }
 
     return FETCHED_DATA
@@ -31,14 +22,15 @@ function DaysToMS(days: number) {
 function CheckDeclined() {
   const SHEET_DATA = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1")!.getDataRange().getValues()
 
-  const COMPANIES = GetCompanyCol(SHEET_DATA)
-  const STATUS = GetJobStatusCol(SHEET_DATA)
+  const COMPANIES = GetCol(SHEET_DATA, COMPANY_COL)
+  const STATUS = GetCol(SHEET_DATA, STATUS_COL)
+  const JOB_TITLES = GetCol(SHEET_DATA, JOB_TITLE_COL)
+  const PROPS = PropertiesService.getDocumentProperties()
   
-  for(let i = 1; i < SHEET_DATA.length; i++) {
+  for(let i = 1; i < COMPANIES.length; i++) {
     const COMPANY_NAME = COMPANIES[i]
     const COMPANY_STATUS = STATUS[i]
-    const JOB_TITLE = SHEET_DATA[i][JOB_TITLE_COL]
-    const PROPS = PropertiesService.getDocumentProperties()
+    const JOB_TITLE = JOB_TITLES[i]
     const KEY = `${COMPANY_NAME}-${JOB_TITLE}`
     const CACHED_COMPANY = PROPS.getProperty(KEY)
     const MS = Date.now()
